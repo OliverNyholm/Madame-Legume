@@ -1,0 +1,35 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{75245023-084E-3B31-8104-FD733870281D}") = "Madame Legume", "Assembly-CSharp-firstpass.csproj", "{3247BEB1-767C-5044-CCAA-05F6E243B3C7}"
+EndProject
+Project("{75245023-084E-3B31-8104-FD733870281D}") = "Madame Legume", "Assembly-CSharp.csproj", "{1D970AC7-83B2-F89E-87B3-A73A14EA298F}"
+EndProject
+Project("{75245023-084E-3B31-8104-FD733870281D}") = "Madame Legume", "Assembly-CSharp-Editor.csproj", "{E875BFE3-EA20-766C-8628-CABC658D6888}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3247BEB1-767C-5044-CCAA-05F6E243B3C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3247BEB1-767C-5044-CCAA-05F6E243B3C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3247BEB1-767C-5044-CCAA-05F6E243B3C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3247BEB1-767C-5044-CCAA-05F6E243B3C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D970AC7-83B2-F89E-87B3-A73A14EA298F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D970AC7-83B2-F89E-87B3-A73A14EA298F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D970AC7-83B2-F89E-87B3-A73A14EA298F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D970AC7-83B2-F89E-87B3-A73A14EA298F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E875BFE3-EA20-766C-8628-CABC658D6888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E875BFE3-EA20-766C-8628-CABC658D6888}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E875BFE3-EA20-766C-8628-CABC658D6888}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E875BFE3-EA20-766C-8628-CABC658D6888}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
