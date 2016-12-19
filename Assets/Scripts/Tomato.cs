@@ -14,9 +14,13 @@ public class Tomato : MonoBehaviour
         if (col.gameObject.name == "Player")
         {
             controller = col.gameObject.GetComponent<PlayerController>();
+            controller.hitTomato = true;
             controller.onGround = false;
 
-            Vector2 jumpForce = new Vector2(0, impulse);
+            ContactPoint2D contact = col.contacts[0];
+
+            Vector2 jumpForce = -contact.normal;
+            jumpForce *= impulse;
             col.gameObject.GetComponent<Rigidbody2D>().AddForce(jumpForce, ForceMode2D.Impulse);
         }
 

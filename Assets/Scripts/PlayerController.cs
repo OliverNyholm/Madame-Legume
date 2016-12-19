@@ -18,18 +18,23 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
 
     [SerializeField]
-    private Transform groundCheck;
-    [SerializeField]
     private LayerMask ground;
-    private float groundCheckRadius = .3f;
+    [SerializeField]
+    private LayerMask banana;
 
     bool facingRight = true;
     public bool onGround = false;
     public bool onBanana = false;
+    public bool leftBanana = false;
+    private float bananaTimer = 0.3f;
+    public bool hitTomato = false;
+    private float tomatoTimer = 0.2f;
 
     [SerializeField]
     private Object[] vegetable;
     private int vegetableIndex;
+    public Color vegetableColor;
+    public int[] vegetableCount;
 
     VegetableOnMouse platformRender;
     private bool showPlatform;
@@ -40,6 +45,7 @@ public class PlayerController : MonoBehaviour
         rigi = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         platformRender = GetComponent<VegetableOnMouse>();
+        vegetableCount = new int[3];
 
         gravity = -(2 * jumpHeight) / Mathf.Pow(timeToJumpApex, 2);
         jumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
@@ -55,10 +61,37 @@ public class PlayerController : MonoBehaviour
         onGround = isOnGround();
         onBanana = isOnBanana();
 
+        // ----------- Timers for impulse speed on banana and tomato -----------
+        if (leftBanana)
+        {
+            bananaTimer -= Time.deltaTime;
 
+            if (bananaTimer < 0)
+            {
+                leftBanana = false;
+                bananaTimer = 0.3f;
+            }
+        }
 
+        if (hitTomato)
+        {
+            tomatoTimer -= Time.deltaTime;
 
-        if (onBanana)
+            if (tomatoTimer < 0)
+            {
+                hitTomato = false;
+                tomatoTimer = 0.2f;
+            }
+        }
+
+        // ----------- Delay movement depending if on banana or tomato -----------
+        if (onBanana || leftBanana)
+        {
+            float targetVelocityX = move * maxSpeed;
+            float temp = Mathf.SmoothDamp(rigi.velocity.x, targetVelocityX, ref velocityXSmoothing, 0.8f);
+            rigi.velocity = new Vector2(temp, rigi.velocity.y);
+        }
+        else if(hitTomato)
         {
             float targetVelocityX = move * maxSpeed;
             float temp = Mathf.SmoothDamp(rigi.velocity.x, targetVelocityX, ref velocityXSmoothing, 0.8f);
@@ -78,10 +111,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (onGround)
-            rigi.velocity = new Vector2(rigi.velocity.x, 0);
-        else
-            rigi.velocity = new Vector2(rigi.velocity.x, rigi.velocity.y + gravity * Time.deltaTime);
 
         #region Jump
         if (Input.GetKeyDown(KeyCode.Space)) //Jump
@@ -100,8 +129,8 @@ public class PlayerController : MonoBehaviour
         {
             if (!showPlatform)
             {
-                showPlatform = true;
-                platformRender.draw = true;
+                //showPlatform = true;
+                //platformRender.draw = true;
             }
             else
             {
@@ -126,13 +155,13 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             vegetableIndex = 0;
-            platformRender.index = vegetableIndex;
+            DrawVegetables();
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             vegetableIndex = 1;
-            platformRender.index = vegetableIndex;
+            DrawVegetables();
         }
         #endregion
     }
@@ -140,37 +169,39 @@ public class PlayerController : MonoBehaviour
     // ----------- Check if on ground -----------
     private bool isOnGround()
     {
-        if (rigi.velocity.y <= 0)
-        {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundCheckRadius, ground);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.2f, ground);
 
-            for (int i = 0; i < colliders.Length; ++i)
-            {
-                if (colliders[i].gameObject != gameObject)
-                {
-                    return true;
-                }
-            }
+        Debug.DrawRay(transform.position, Vector2.down, Color.red);
+
+        if (hit.collider != null)
+        {
+            return true;
         }
+
         return false;
     }
 
     // ----------- Check if on banana. Could be merged into isOnGround() -----------
     private bool isOnBanana()
     {
-        if (rigi.velocity.y <= 0)
-        {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundCheckRadius, ground);
+        RaycastHit2D hitCenter = Physics2D.Raycast(transform.position, Vector2.down, 1.2f, banana);
+        RaycastHit2D hitLeft = Physics2D.Raycast(transform.position - new Vector3(.3f, 0, 0), Vector2.down, 1.2f, banana);
+        RaycastHit2D hitRight = Physics2D.Raycast(transform.position + new Vector3(.3f, 0, 0), Vector2.down, 1.2f, banana);
 
-            for (int i = 0; i < colliders.Length; ++i)
-            {
-                if (colliders[i].gameObject != gameObject && colliders[i].gameObject.layer == 11) //11 = Banana layer
-                {
-                    return true;
-                }
-            }
+        Debug.DrawRay(transform.position, Vector2.down, Color.green);
+        Debug.DrawRay(transform.position - new Vector3(.3f, 0, 0), Vector2.down, Color.green);
+        Debug.DrawRay(transform.position + new Vector3(.3f, 0, 0), Vector2.down, Color.green);
+
+        if (hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null)
+        {
+            return true;
         }
-        return false;
+        else
+        {
+            if (onBanana)
+                leftBanana = true;
+            return false;
+        }
     }
 
     // ----------- Flip sprite -----------
@@ -180,5 +211,16 @@ public class PlayerController : MonoBehaviour
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
+    }
+
+    void DrawVegetables()
+    {
+        platformRender.index = vegetableIndex;
+        showPlatform = true;
+        platformRender.draw = true;
+        vegetableColor = new Color(255, 255, 255, 100);
+
+        if (vegetableCount[vegetableIndex] == 0)
+            vegetableColor = new Color(255, 0, 0, 100);
     }
 }

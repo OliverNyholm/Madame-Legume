@@ -6,16 +6,17 @@ public class Banana : MonoBehaviour {
     [SerializeField]
     private float impulse;
 
-    PlayerController controller;
+    //PlayerController controller;
 
-    void OnCollisionStay2D(Collision2D col)
+    void OnCollisionEnter2D(Collision2D col)
     {
-        controller = col.gameObject.GetComponent<PlayerController>();
+        //controller = col.gameObject.GetComponent<PlayerController>();
+        //controller.onGround = false;
 
-        controller = col.gameObject.GetComponent<PlayerController>();
-        controller.onGround = false;
+        ContactPoint2D contact = col.contacts[0];
+        Vector3 tangent = Vector3.Cross(contact.normal, Vector3.back);
 
-        Vector2 jumpForce = new Vector2(0, impulse);
+        Vector2 jumpForce = tangent * impulse;
         col.gameObject.GetComponent<Rigidbody2D>().AddForce(jumpForce, ForceMode2D.Impulse);
 
     }
