@@ -13,7 +13,7 @@ public class PreviewVegetable : MonoBehaviour
     private bool unavailable;
     public bool colliding;
 
-    private Color red = new Color(255, 0, 0, 100);
+    private Color red = new Color(255, 0, 0, 0.9f);
     private Color pink = new Color(0.93f, 0.43f, 0.58f, 0.9f);
     private Color white = new Color(1, 1, 1, 0.9f);
 

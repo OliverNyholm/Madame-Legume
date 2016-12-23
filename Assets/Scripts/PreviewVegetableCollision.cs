@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PreviewVegetableCollision : MonoBehaviour
 {
-    private int selfLayer = 12;
+    private int selfLayer = 2; //Ingore Raycast layer
     private bool colliding;
 
     void OnTriggerEnter2D(Collider2D other)
