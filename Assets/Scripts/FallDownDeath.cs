@@ -17,7 +17,6 @@ public class FallDownDeath : MonoBehaviour {
     {
         if (col.gameObject.name == "Player")
         {
-            //SceneManager.LoadScene(nextScene);
             player.transform.position = startPosition;
         }
     }

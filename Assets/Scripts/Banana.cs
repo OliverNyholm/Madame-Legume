@@ -19,5 +19,7 @@ public class Banana : MonoBehaviour {
         Vector2 jumpForce = tangent * impulse;
         col.gameObject.GetComponent<Rigidbody2D>().AddForce(jumpForce, ForceMode2D.Impulse);
 
+        Debug.DrawRay(contact.point, tangent, Color.red, 3);
+
     }
 }

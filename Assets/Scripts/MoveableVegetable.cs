@@ -14,6 +14,7 @@ public class MoveableVegetable : MonoBehaviour {
     {
         Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10);
         Vector3 newposition = Camera.main.ScreenToWorldPoint(mousePos) + offset;
+        
 
         transform.position = newposition;
     }
