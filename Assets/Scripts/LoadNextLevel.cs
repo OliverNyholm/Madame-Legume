@@ -11,8 +11,7 @@ public class LoadNextLevel : MonoBehaviour {
     {
         if (col.gameObject.name == "Player")
         {
-            //SceneManager.LoadScene(nextScene);
-            Application.LoadLevel(nextScene);
+            SceneManager.LoadScene(nextScene);
         }
     }
 }

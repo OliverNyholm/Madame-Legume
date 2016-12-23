@@ -33,10 +33,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Object[] vegetable;
     private int vegetableIndex;
-    public Color vegetableColor;
     public int[] vegetableCount;
+    LevelData levelData;
 
-    VegetableOnMouse platformRender;
+    PreviewVegetable platformRender;
     private bool showPlatform;
 
 
@@ -44,8 +44,9 @@ public class PlayerController : MonoBehaviour
     {
         rigi = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        platformRender = GetComponent<VegetableOnMouse>();
-        vegetableCount = new int[3];
+        platformRender = transform.parent.gameObject.GetComponent<PreviewVegetable>();
+        levelData = GameObject.Find("LevelData").GetComponent<LevelData>();
+        setUpVegetables();
 
         gravity = -(2 * jumpHeight) / Mathf.Pow(timeToJumpApex, 2);
         jumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
@@ -91,7 +92,7 @@ public class PlayerController : MonoBehaviour
             float temp = Mathf.SmoothDamp(rigi.velocity.x, targetVelocityX, ref velocityXSmoothing, 0.8f);
             rigi.velocity = new Vector2(temp, rigi.velocity.y);
         }
-        else if(hitTomato)
+        else if (hitTomato)
         {
             float targetVelocityX = move * maxSpeed;
             float temp = Mathf.SmoothDamp(rigi.velocity.x, targetVelocityX, ref velocityXSmoothing, 0.8f);
@@ -138,8 +139,13 @@ public class PlayerController : MonoBehaviour
                 mousePos.z = 2.0f;
                 Vector3 objectPosition = Camera.main.ScreenToWorldPoint(mousePos);
 
-                vegetable[vegetableIndex] = Instantiate(vegetable[vegetableIndex], objectPosition, Quaternion.identity);
+                if (vegetableCount[vegetableIndex] > 0 && !platformRender.colliding)
+                {
+                    vegetableCount[vegetableIndex]--;
+                    vegetable[vegetableIndex] = Instantiate(vegetable[vegetableIndex], objectPosition, Quaternion.identity);                    
+                }
             }
+           
         }
         #endregion
 
@@ -147,7 +153,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             showPlatform = false;
-            platformRender.draw = false;
+            platformRender.HideImage();
         }
         #endregion
 
@@ -163,34 +169,48 @@ public class PlayerController : MonoBehaviour
             vegetableIndex = 1;
             DrawVegetables();
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            vegetableIndex = 2;
+            DrawVegetables();
+        }
         #endregion
     }
 
-    // ----------- Check if on ground -----------
+    void setUpVegetables()
+    {
+        vegetableCount = new int[3];
+        vegetableCount[0] = levelData.carrots;
+        vegetableCount[1] = levelData.tomatos;
+        vegetableCount[2] = levelData.bananas;
+    }
+
+
+    /// <summary>
+    /// ----------- Check if on ground -----------
+    /// </summary>
     private bool isOnGround()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.2f, ground);
+        RaycastHit2D hitCenter = Physics2D.Raycast(transform.position, Vector2.down, 1.2f, ground);
+        RaycastHit2D hitLeft = Physics2D.Raycast(transform.position - new Vector3(.3f, 0, 0), Vector2.down, 1.2f, ground);
+        RaycastHit2D hitRight = Physics2D.Raycast(transform.position + new Vector3(.3f, 0, 0), Vector2.down, 1.2f, ground);
 
-        Debug.DrawRay(transform.position, Vector2.down, Color.red);
-
-        if (hit.collider != null)
+        if (hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null)
         {
-            return true;
+                return true;
         }
 
         return false;
     }
-
-    // ----------- Check if on banana. Could be merged into isOnGround() -----------
+    /// <summary>
+    /// ----------- Check if on banana. Could be merged into isOnGround() -----------
+    /// </summary>
     private bool isOnBanana()
-    {
+    { 
         RaycastHit2D hitCenter = Physics2D.Raycast(transform.position, Vector2.down, 1.2f, banana);
         RaycastHit2D hitLeft = Physics2D.Raycast(transform.position - new Vector3(.3f, 0, 0), Vector2.down, 1.2f, banana);
         RaycastHit2D hitRight = Physics2D.Raycast(transform.position + new Vector3(.3f, 0, 0), Vector2.down, 1.2f, banana);
-
-        Debug.DrawRay(transform.position, Vector2.down, Color.green);
-        Debug.DrawRay(transform.position - new Vector3(.3f, 0, 0), Vector2.down, Color.green);
-        Debug.DrawRay(transform.position + new Vector3(.3f, 0, 0), Vector2.down, Color.green);
 
         if (hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null)
         {
@@ -213,14 +233,17 @@ public class PlayerController : MonoBehaviour
         transform.localScale = theScale;
     }
 
+    /// <summary>
+    /// Draws the preview image of the vegetable you want to place on the screen.
+    /// </summary>
     void DrawVegetables()
     {
-        platformRender.index = vegetableIndex;
         showPlatform = true;
-        platformRender.draw = true;
-        vegetableColor = new Color(255, 255, 255, 100);
+        bool unavailable = false;
 
         if (vegetableCount[vegetableIndex] == 0)
-            vegetableColor = new Color(255, 0, 0, 100);
+            unavailable = true;
+
+        platformRender.DrawImage(vegetableIndex, unavailable);
     }
 }
