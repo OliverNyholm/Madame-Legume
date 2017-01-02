@@ -208,9 +208,9 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private bool isOnBanana()
     { 
-        RaycastHit2D hitCenter = Physics2D.Raycast(transform.position, Vector2.down, 1.2f, banana);
-        RaycastHit2D hitLeft = Physics2D.Raycast(transform.position - new Vector3(.3f, 0, 0), Vector2.down, 1.2f, banana);
-        RaycastHit2D hitRight = Physics2D.Raycast(transform.position + new Vector3(.3f, 0, 0), Vector2.down, 1.2f, banana);
+        RaycastHit2D hitCenter = Physics2D.Raycast(transform.position, Vector2.down, 1.5f, banana);
+        RaycastHit2D hitLeft = Physics2D.Raycast(transform.position - new Vector3(.3f, 0, 0), Vector2.down, 1.5f, banana);
+        RaycastHit2D hitRight = Physics2D.Raycast(transform.position + new Vector3(.3f, 0, 0), Vector2.down, 1.5f, banana);
 
         if (hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null)
         {
