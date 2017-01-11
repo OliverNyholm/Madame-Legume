@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rigi;
     private Animator anim;
+    private Camera camera;
+    private Vector3 cameraOffset;
 
     [SerializeField]
     private LayerMask ground;
@@ -39,12 +42,18 @@ public class PlayerController : MonoBehaviour
     PreviewVegetable platformRender;
     private bool showPlatform;
 
+    private Text vegetableText;
+
 
     void Start()
     {
         rigi = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        cameraOffset = transform.position - camera.transform.position;
+        cameraOffset.z = -10.16469f;
         platformRender = transform.parent.gameObject.GetComponent<PreviewVegetable>();
+        vegetableText = GameObject.Find("VegetableText").GetComponent<Text>();
         levelData = GameObject.Find("LevelData").GetComponent<LevelData>();
         setUpVegetables();
 
@@ -58,6 +67,10 @@ public class PlayerController : MonoBehaviour
         // ----------- Move left and right -----------
 
         float move = Input.GetAxis("Horizontal");
+        if (move != 0)
+        {
+            camera.transform.position = transform.position + cameraOffset; // Camera.main.ScreenToWorldPoint(transform.position);
+        }
 
         onGround = isOnGround();
         onBanana = isOnBanana();
@@ -125,6 +138,7 @@ public class PlayerController : MonoBehaviour
         }
         #endregion
 
+        // ----------- Place vegetable if platform is visible at mouse position -----------
         #region Left Mouse
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -142,13 +156,15 @@ public class PlayerController : MonoBehaviour
                 if (vegetableCount[vegetableIndex] > 0 && !platformRender.colliding)
                 {
                     vegetableCount[vegetableIndex]--;
-                    vegetable[vegetableIndex] = Instantiate(vegetable[vegetableIndex], objectPosition, Quaternion.identity);                    
+                    changeVegetableCountUI();
+                    vegetable[vegetableIndex] = Instantiate(vegetable[vegetableIndex], objectPosition, Quaternion.identity);
                 }
             }
-           
+
         }
         #endregion
 
+        // ----------- If vegetable visible, hide it. -----------
         #region Right Mouse
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
@@ -198,7 +214,7 @@ public class PlayerController : MonoBehaviour
 
         if (hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null)
         {
-                return true;
+            return true;
         }
 
         return false;
@@ -207,7 +223,7 @@ public class PlayerController : MonoBehaviour
     /// ----------- Check if on banana. Could be merged into isOnGround() -----------
     /// </summary>
     private bool isOnBanana()
-    { 
+    {
         RaycastHit2D hitCenter = Physics2D.Raycast(transform.position, Vector2.down, 1.5f, banana);
         RaycastHit2D hitLeft = Physics2D.Raycast(transform.position - new Vector3(.3f, 0, 0), Vector2.down, 1.5f, banana);
         RaycastHit2D hitRight = Physics2D.Raycast(transform.position + new Vector3(.3f, 0, 0), Vector2.down, 1.5f, banana);
@@ -245,5 +261,14 @@ public class PlayerController : MonoBehaviour
             unavailable = true;
 
         platformRender.DrawImage(vegetableIndex, unavailable);
+    }
+
+
+    /// <summary>
+    /// Changes the text on the UI for how many vegetables are available
+    /// </summary>
+    private void changeVegetableCountUI()
+    {
+        vegetableText.text = vegetableText.text = "Carrots: " + vegetableCount[0] + "   Tomatos: " + vegetableCount[1] + "   Bananas: " + vegetableCount[2];
     }
 }
