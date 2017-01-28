@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private float timeToJumpApex = .4f;
 
     private float gravity;
+
     private float jumpVelocity;
     private float velocityXSmoothing;
 
@@ -40,7 +41,7 @@ public class PlayerController : MonoBehaviour
     LevelData levelData;
 
     PreviewVegetable platformRender;
-    private bool showPlatform;
+    public bool showPlatform;
 
     private Text vegetableText;
 

@@ -70,5 +70,11 @@ public class MovableVegetable : MonoBehaviour
             GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             colliding = false;
         }
+
+        int nuSkaparJagEnInt;
+        nuSkaparJagEnInt = 10;
+
+        int nuSkaparJagEnTill = 20;
+        nuSkaparJagEnTill = nuSkaparJagEnInt;
     }
 }
